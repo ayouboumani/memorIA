@@ -12,7 +12,7 @@ memorIA is a web application that allows users to search through their local pho
 ## Features
 
 - **Semantic Search**: Search your local photos by providing a descriptive text query.
-- **Person Search**: Search your local photos by uploading an input photo of the person you are looking for.
+- **Personalized Search**: Search your local photos by uploading a photo of you.
 - **Local Storage**: Everything is processed locally, ensuring privacy and security.
 
 ## Installation
@@ -51,9 +51,6 @@ To set up the memorIA web app on your local machine, follow these steps:
 
 Contributions are welcome! If you have suggestions or improvements, please feel free to open an issue or submit a pull request.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
