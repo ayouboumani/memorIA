@@ -43,7 +43,7 @@ To set up the memorIA web app on your local machine, follow these steps:
 ## Usage
 
 1. Enter the path of the folder containing your photos.
-2. Select an input photo from your local storage.
+2. (Optional) Select an input photo from your local storage.
 3. Provide a text query to describe your memory.
 4. Click the "Find Memories" button to see matched photos.
 
