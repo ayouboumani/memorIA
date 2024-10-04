@@ -81,50 +81,91 @@
         }
 
         .input-photo-container img {
-            width: 200px;
+            width: 100px;
             height: auto;
-            margin: 10px auto;
-            display: block;
+            margin: 10px 0;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Loading Spinner Styles */
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #007bff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         footer {
             margin-top: 30px;
             font-size: 0.8rem;
             color: #aaa;
-            text-align: center;   /* Centers the text */
-            position: fixed;      /* Fixes the footer at the bottom */
-            bottom: 10px;         /* Distance from the bottom */
+            text-align: center;
+            position: fixed;
+            bottom: 10px;
             left: 0;
             right: 0;
         }
-
     </style>
+
+    <script>
+        // Function to display the loading spinner
+        function showLoading() {
+            document.getElementById('loader').style.display = 'block';  // Show the loading spinner
+        }
+
+        // Function to display selected input photo
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewImage = document.getElementById('photoPreview');
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';  // Show the image
+                }
+                reader.readAsDataURL(file);  // Read the file as a data URL
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>memorIA</h1>
         <p>Find Your Best Memories</p>
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
             <label for="folder_path">Folder Path:</label>
-            <input type="text" id="folder_path" name="folder_path" placeholder="Enter the path of your photo folder" required>
+            <input type="text" id="folder_path" name="folder_path" placeholder="Enter the path of your photo folder" required value="{{ folder_path }}">
             
             <label for="photo">Select a photo:</label>
-            <input type="file" id="photo" name="photo">
+            <input type="file" id="photo" name="photo" onchange="previewPhoto(event)">
+            
+            <!-- Display the selected input photo here -->
+            <div class="input-photo-container">
+                {% if input_photo %}
+                    <img id="photoPreview" src="{{ url_for('output_file', filename=input_photo) }}" alt="Selected Photo">
+                {% else %}
+                    <img id="photoPreview" src="" alt="Selected Photo" style="display: none;">
+                {% endif %}
+            </div>
             
             <label for="text_query">Text Query:</label>
-            <input type="text" id="text_query" name="text_query" placeholder="Describe your memory">
+            <input type="text" id="text_query" name="text_query" placeholder="Describe your memory" value="{{ text_query }}">
             
             <button type="submit">Find Memories</button>
         </form>
 
-        {% if input_photo %}
-        <div class="input-photo-container">
-            <h2>Input Photo:</h2>
-            <img src="{{ url_for('output_file', filename=input_photo) }}" alt="Input Photo">
-        </div>
-        {% endif %}
+        <!-- Loading Spinner -->
+        <div class="loader" id="loader"></div>
 
         {% if output_photos %}
         <div class="output-container">

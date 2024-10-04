@@ -35,19 +35,28 @@ def index():
             input_photo_path = os.path.join(output_folder, uploaded_file.filename)
             uploaded_file.save(input_photo_path)
 
-            # Call the main processing function to find matches
-            main(photo_folder, embedding_folder, output_folder, input_photo_path, text_query)
+        # Call the main processing function to find matches
+        main(photo_folder, embedding_folder, output_folder, text_query,input_photo_path)
 
-            # List the output photos
-            output_photos = os.listdir(output_folder)
-            
-            # Remove the input photo from the matched photos
-            if uploaded_file.filename in output_photos:
-                output_photos.remove(uploaded_file.filename)
+        # List the output photos
+        output_photos = os.listdir(output_folder)
 
-            return render_template('index.html', output_photos=output_photos, input_photo=uploaded_file.filename)
+        # Remove the input photo from the matched photos if it exists
+        if input_photo_path and uploaded_file.filename in output_photos:
+            output_photos.remove(uploaded_file.filename)
+
+        return render_template(
+                'index.html',
+                output_photos=output_photos,
+                input_photo=uploaded_file.filename if input_photo_path else None,
+                folder_path=folder_path,  # Keep the folder path
+                text_query=text_query  # Keep the text query
+                )
 
     return render_template('index.html', output_photos=None, input_photo=None)
+
+
+
 
 
 

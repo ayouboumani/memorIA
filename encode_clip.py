@@ -3,21 +3,11 @@ import numpy as np
 import torch
 from torchvision import transforms
 from PIL import Image
-from transformers import AutoModel, AutoProcessor
 
-def load_clip_model():
-    # Load the Jina CLIP model 
-    model_id = "jinaai/jina-clip-v1"
-    model = AutoModel.from_pretrained(model_id,trust_remote_code=True)
-    processor = AutoProcessor.from_pretrained(model_id,trust_remote_code=True)
-    return model, processor
 
-def encode_images(input_folder, output_folder):
+def encode_images(model, processor, input_folder, output_folder):
     # Create output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
-
-    # Load the CLIP model and processor
-    model, processor = load_clip_model()
 
     # Process each image in the input folder
     for file_name in os.listdir(input_folder):
@@ -26,7 +16,6 @@ def encode_images(input_folder, output_folder):
             if os.path.exists(embedding_file):
                 continue
             image_path = os.path.join(input_folder, file_name)
-            print(f"Processing {image_path}...")
 
             # Load and process the image
             image = Image.open(image_path).convert("RGB")
@@ -41,7 +30,6 @@ def encode_images(input_folder, output_folder):
 
             # Save the embeddings as a numpy file
             np.save(embedding_file, embeddings.cpu().numpy())
-            print(f"Saved embedding to {embedding_file}")
 
 if __name__ == "__main__":
     input_folder = '/home/ayoub/Pictures/2024_Croitie'  # Update with your input folder path

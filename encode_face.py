@@ -78,9 +78,11 @@ def compare_embeddings_euclidean(embedding1, embedding2):
     return np.linalg.norm(np.array(embedding1) - np.array(embedding2))
 
 # 8. Full workflow: generate embeddings for all detected faces in each image and save them for later use
-def process_images_in_folder(parent_folder, output_folder, align_faces=True):
-    image_paths = get_image_paths(parent_folder)
-
+def process_images_in_folder(parent_folder, output_folder, align_faces=True, selection = None):
+    if selection is None:
+        image_paths = get_image_paths(parent_folder)
+    else:
+        image_paths = [os.path.join(parent_folder,image_name) for image_name in selection]
     # Load the already processed images from the log file
     log_file = os.path.join(output_folder,"log_faces.txt")
     if os.path.exists(log_file):
