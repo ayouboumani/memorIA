@@ -22,6 +22,9 @@ def encode_images(input_folder, output_folder):
     # Process each image in the input folder
     for file_name in os.listdir(input_folder):
         if file_name.endswith(('.jpg', '.jpeg', '.png', 'JPG')):  # Add other formats if needed
+            embedding_file = os.path.join(output_folder, f"{file_name}_clip.npy")
+            if os.path.exists(embedding_file):
+                continue
             image_path = os.path.join(input_folder, file_name)
             print(f"Processing {image_path}...")
 
@@ -37,7 +40,6 @@ def encode_images(input_folder, output_folder):
             embeddings = embeddings / embeddings.norm(dim=-1, keepdim=True)
 
             # Save the embeddings as a numpy file
-            embedding_file = os.path.join(output_folder, f"{file_name}_clip.npy")
             np.save(embedding_file, embeddings.cpu().numpy())
             print(f"Saved embedding to {embedding_file}")
 

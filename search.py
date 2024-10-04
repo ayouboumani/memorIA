@@ -2,9 +2,12 @@ import os
 import numpy as np
 import shutil
 import torch
+import concurrent.futures
+import time
 from PIL import Image
 from transformers import AutoModel, AutoProcessor
-
+from encode_face import process_images_in_folder, generate_embeddings_deepface
+from encode_clip import encode_images 
 
 def load_clip_model():
     # Load the Jina CLIP model 
@@ -22,7 +25,7 @@ def load_clip_embeddings(folder):
             clip_path = os.path.join(folder, file_name)
             embedding = np.load(clip_path)
             key = os.path.basename(file_name).replace('_clip.npy', '')
-            clip_embeddings[key] = embedding
+            clip_embeddings[key] = torch.Tensor(embedding)
     return clip_embeddings
 
 def load_face_embeddings(folder):
@@ -36,7 +39,7 @@ def load_face_embeddings(folder):
                 # Load face embeddings
                 embedding = np.load(face_path)
                 key = os.path.basename(face_path)[:-4]
-                face_embeddings[key] = embedding
+                face_embeddings[key] = torch.Tensor(embedding)
     return face_embeddings
 
 def encode_text(query, model, processor):
@@ -46,6 +49,19 @@ def encode_text(query, model, processor):
         text_embedding = model.get_text_features(**inputs)
     return text_embedding / text_embedding.norm(dim=-1, keepdim=True)  # Normalize
 
+def get_top_k_similar_photos(clip_embeddings, text_embedding, k=5):
+    # Compute the cosine similarity between each image embedding and the text embedding
+    similarities = {key: torch.cosine_similarity(embedding, text_embedding).item()
+                    for key, embedding in clip_embeddings.items()}
+
+    # Sort by similarity in descending order and select the top k
+    top_k = sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:k]
+
+    # Filter the embeddings of the top k similar photos
+    filtered_photos = {key: clip_embeddings[key] for key, _ in top_k}
+    
+    return filtered_photos
+
 def find_similar_photos(face_embedding, faces_embeddings, photo_folder, output_folder):
     os.makedirs(output_folder, exist_ok=True)
     matched_photos = []
@@ -53,7 +69,7 @@ def find_similar_photos(face_embedding, faces_embeddings, photo_folder, output_f
     # Compute similarity for each CLIP embedding
     for key in faces_embeddings:
         # Calculate cosine similarity between CLIP embedding and text embedding
-        similarity = torch.cosine_similarity(torch.tensor(face_embedding).unsqueeze(0), torch.tensor(faces_embeddings[key]).unsqueeze(0)).item()
+        similarity = torch.cosine_similarity(face_embedding.unsqueeze(0), faces_embeddings[key].unsqueeze(0)).item()
         print(f"Similarity for {key}: {similarity}")
 
         if similarity > 0.1:  # Threshold for similarity
@@ -76,6 +92,17 @@ def main(photo_folder, embedding_folder, output_folder, input_photo, text_query)
     # Load CLIP model
     model, processor = load_clip_model()
 
+    start_time = time.time()  # Record the start time
+
+    process_images_in_folder(photo_folder, embedding_folder)
+    encode_images(photo_folder, embedding_folder)
+
+    end_time = time.time()  # Record the end time
+    total_time = end_time - start_time  # Calculate the total time taken
+    print(f"Total time for computing embeddings: {total_time:.2f} seconds")
+
+
+    
     # Load CLIP embeddings
     clip_embeddings = load_clip_embeddings(embedding_folder)
 
@@ -85,8 +112,12 @@ def main(photo_folder, embedding_folder, output_folder, input_photo, text_query)
     # Encode the text query
     text_embedding = encode_text(text_query, model, processor)
 
+    # Encode query face
+    input_face_embeddings, _  = generate_embeddings_deepface(input_photo)
+    input_face_embedding = torch.Tensor(input_face_embeddings[0])
+
     # Filter photos based on text query embeddings
-    filtered_photos = {key: embedding for key, embedding in clip_embeddings.items() if torch.cosine_similarity(torch.tensor(embedding), text_embedding).item() > 0.2}  # Adjust threshold as needed
+    filtered_photos = get_top_k_similar_photos(clip_embeddings, text_embedding)
 
     if not filtered_photos:
         print("No photos matched the text query.")
@@ -94,8 +125,6 @@ def main(photo_folder, embedding_folder, output_folder, input_photo, text_query)
 
     print(f"Filtered photos based on text query: {filtered_photos.keys()}")
 
-    # Load the input photo face embedding
-    input_face_embedding = np.load(input_photo)  # Assuming input_photo is the path to the face embedding
 
     filtered_faces = {}
     for key in filtered_photos:
@@ -112,14 +141,16 @@ def main(photo_folder, embedding_folder, output_folder, input_photo, text_query)
 
 
 if __name__ == "__main__":
-    photo_folder = '/home/ayoub/Pictures/2024_Croitie'  # Update with your folder containing original photos
-    embedding_folder = '/home/ayoub/Pictures/2024_Croitie/embeddings'  # Update with your folder containing embeddings
-    output_folder = '/home/ayoub/Pictures/2024_Croitie/output'  # Update with your output folder path
-    input_photo = '/home/ayoub/Pictures/2024_Croitie/embeddings/P1123508.JPG_face0.npy'  # Update with the input photo path
-    text_query = "photo of me with sunglasses"  # Example text query
+    photo_folder = '/home/ayoub/Pictures/2024_ValdAzun'  # Update with your folder containing original photos
+    embedding_folder = '/home/ayoub/Pictures/2024_ValdAzun/embeddings'  # Update with your folder containing embeddings
+    output_folder = '/home/ayoub/Pictures/2024_ValdAzun/output'  # Update with your output folder path
+    input_photo = '/home/ayoub/Pictures/2024_ValdAzun/P1112792.JPG'  # Update with the input photo path
+    text_query = "a photo of me dancing"  # Example text query
 
     if os.path.exists(output_folder): 
         shutil.rmtree(output_folder)
+    
+    os.makedirs(embedding_folder, exist_ok=True)
 
 
     # Find the closest photo

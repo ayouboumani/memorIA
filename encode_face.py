@@ -6,7 +6,7 @@ from deepface.modules import detection
 from sklearn.metrics.pairwise import cosine_similarity
 
 # 1. Resize image to a manageable size to avoid memory issues
-def resize_image(image, target_width=1600):
+def resize_image(image, target_width=800):
     height, width = image.shape[:2]
     if width > target_width:
         scaling_factor = target_width / width
@@ -81,24 +81,34 @@ def compare_embeddings_euclidean(embedding1, embedding2):
 def process_images_in_folder(parent_folder, output_folder, align_faces=True):
     image_paths = get_image_paths(parent_folder)
 
+    # Load the already processed images from the log file
+    log_file = os.path.join(output_folder,"log_faces.txt")
+    if os.path.exists(log_file):
+        with open(log_file, 'r') as log:
+            processed_images = {line.strip() for line in log}  # Use a set for faster lookups
+    else:
+        processed_images = set()
+
     for img_path in image_paths:
         output_file = os.path.join(output_folder, os.path.basename(img_path))
-        if os.path.exists(f"{output_file}_face0.npy"):
-            print(f"embedding already generated")
+
+        # Skip processing if the image is already logged as processed
+        if img_path in processed_images:
+            print(f"Skipping already processed image: {img_path}")
             continue
+
         embeddings, faces = generate_embeddings_deepface(img_path, align=align_faces)
 
         if embeddings is not None and len(embeddings) > 0:
             for i, embedding in enumerate(embeddings):
-                # Check if the embedding already exists
-                if True:#not embedding_exists(output_file, i):
-                    save_embedding(embedding, output_file, i)
-                    print(f"Saved embedding for {img_path}, face {i}")
-                    save_image(faces[i], output_file[:-4].replace("embeddings","faces")+f"_face{i}.jpg")
-                else:
-                    print(f"Embedding already exists for {img_path}, face {i}, skipping...")
+                save_embedding(embedding, output_file, i)
+                print(f"Saved embedding for {img_path}, face {i}")
+                save_image(faces[i], output_file[:-4].replace("embeddings","faces")+f"_face{i}.jpg")
         else:
             print(f"No faces detected in {img_path}")
+        # Log the processed image name
+        with open(log_file, 'a') as log:
+            log.write(f"{img_path}\n")  # Append the processed image path to the log file
 
 
 # Example usage
