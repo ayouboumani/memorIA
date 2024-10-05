@@ -1,58 +1,57 @@
-# memorIA
+# MemorIA - MIA
 
-**Find Your Best Memories**
+## Overall presentation
 
-memorIA is a web application that allows users to search through their local photos using AI. With a simple and intuitive interface, users provide a text query and if needed a photo to find matched memories in their personal photo library.
+The project has the following structure: 
 
-<div style="display: flex; justify-content: center;">
-    <img src="demo1.png" alt="Template Photo" style="margin: 10px; width: 45%;">
-    <img src="demo2.png" alt="Template Photo" style="margin: 10px; width: 45%;">
-</div>
+```bash
+/memorIA
+│
+├── /backend/           # Python Backend (e.g., Flask/Django/FastAPI)
+│   ├── app/
+│   ├── venv/           # Virtual environment (optional, recommended to not commit this to VCS)
+│   ├── requirements.txt
+│   ├── config.py
+│   ├── run.py          # Main file to start the server
+│   └── ...
+│
+├── /frontend/          # Angular Frontend
+│   ├── src/
+│   ├── angular.json
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── ...
+│
+├── .gitignore
+└── README.md
+```
 
-## Features
+The backend of the project is done in **python** and the front end is built in **Angular**.
 
-- **Semantic Search**: Search your local photos by providing a descriptive text query.
-- **Personalized Search**: Search your local photos by uploading a photo of you.
-- **Local Storage**: Everything is processed locally, ensuring privacy and security.
+The folder structure contains diagrams for the abstraction level of the project. The application used to read/write in the
+diagram files is **drawio**.
 
-## Installation
+## Prerequisites
 
-To set up the memorIA web app on your local machine, follow these steps:
+Download nodejs, npm & install angular. [WRITE A TUTORIAL LATER]
 
-1. Clone the repository:
+To launch the frontend, run the following commands:
 
-   ```bash
-   git clone https://github.com/ayouboumani/memorIA.git
-   cd memorIA
-   ```
+```bash
+cd frontend
+ng serve
+```
 
-2. Install the required Python packages:
+## OnBoarding
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Naming conventions
 
-3. Run the application:
+[TO BE DEFINED]
 
-   ```bash
-   python app.py
-   ```
+### Branch policy
 
-4. Open your web browser and navigate to `http://127.0.0.1:5000`.
+[TO BE DEFINED]
 
-## Usage
+### How to contribute
 
-1. Enter the path of the folder containing your photos.
-2. (Optional) Select an input photo from your local storage.
-3. Provide a text query to describe your memory.
-4. Click the "Find Memories" button to see matched photos.
-
-## Contributing
-
-Contributions are welcome! If you have suggestions or improvements, please feel free to open an issue or submit a pull request.
-
-
-## Acknowledgments
-
-- Thanks to the open-source community for providing libraries and tools that made this project possible.
-
+[TO BE DEFINED]
