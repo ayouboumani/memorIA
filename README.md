@@ -22,6 +22,8 @@ The project has the following structure:
 │   ├── tsconfig.json
 │   └── ...
 │
+├── /structure/         # Folder for structural diagrams
+|
 ├── .gitignore
 └── README.md
 ```
