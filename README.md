@@ -2,7 +2,7 @@
 
 **Find Your Best Memories**
 
-memorIA is a web application that allows users to search through their local photos using AI. With a simple and intuitive interface, users provide a text query and if needed a input photo to find matched memories in their personal photo library.
+memorIA is a web application that allows users to search through their local photos using AI. With a simple and intuitive interface, users provide a text query and if needed a photo to find matched memories in their personal photo library.
 
 <div style="display: flex; justify-content: center;">
     <img src="demo1.png" alt="Template Photo" style="margin: 10px; width: 45%;">
