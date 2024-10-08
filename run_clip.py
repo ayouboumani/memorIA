@@ -5,7 +5,7 @@ from PIL import Image
 from transformers import AutoModel, AutoProcessor
 
 # Load the Jina CLIP model and processor using AutoModel
-model_id = "jinaai/jina-clip-v1"
+model_id = "openai/clip-vit-base-patch32"
 model = AutoModel.from_pretrained(model_id, trust_remote_code=True)
 processor = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)
 
@@ -56,7 +56,7 @@ def search_images_in_folder(folder_path, text_query):
     return image_scores, average_time
 
 # Define the folder path and the text query
-folder_path = "/home/ayoub/Pictures/mehdi"  # Replace with the actual path to your folder
+folder_path = "/home/ayoub/Pictures/test"  # Replace with the actual path to your folder
 text_query = "photo of me reading a book"  # Modify this query as needed
 
 # Search for images and measure average time

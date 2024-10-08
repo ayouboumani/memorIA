@@ -35,4 +35,7 @@ if __name__ == "__main__":
     input_folder = '/home/ayoub/Pictures/2024_Croitie'  # Update with your input folder path
     output_folder = '/home/ayoub/Pictures/2024_Croitie/embeddings'  # Update with your output folder path
 
-    encode_images(input_folder, output_folder)
+    model_id = "jinaai/jina-clip-v1"
+    model = AutoModel.from_pretrained(model_id,trust_remote_code=True)
+    processor = AutoProcessor.from_pretrained(model_id,trust_remote_code=True)
+    encode_images(model, processor, input_folder, output_folder)

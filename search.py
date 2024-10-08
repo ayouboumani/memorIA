@@ -15,7 +15,7 @@ from encode_clip import encode_images
 
 def load_clip_model():
     # Load the Jina CLIP model 
-    model_id = "jinaai/jina-clip-v1"
+    model_id = "openai/clip-vit-base-patch32"
     model = AutoModel.from_pretrained(model_id,trust_remote_code=True)
     processor = AutoProcessor.from_pretrained(model_id,trust_remote_code=True)
     return model, processor
