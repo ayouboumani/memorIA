@@ -1,0 +1,11 @@
+<div class="catalogue-container">
+  <div class="logo-container">
+  </div>
+  <div class="card-element">
+    <div class="route-element" *ngFor="let route of routes">
+      <button mat-button *ngIf="route.path == ''" [routerLink]="route.path"> &thinsp; </button>
+      <button mat-button *ngIf="route.path !== '' && route.path !== '**' " [routerLink]="route.path">{{route.path}}</button>
+      <button mat-button *ngIf="route.path === '**'" [routerLink]="route.path">Failure Page</button>
+    </div>
+  </div>
+</div>
